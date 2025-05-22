@@ -11,7 +11,8 @@
     "express": "^4.18.2",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-stealth": "^2.11.1",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "puppeteer-core": "^21.3.8"  // Add this line
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
