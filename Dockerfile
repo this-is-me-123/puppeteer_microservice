@@ -1,9 +1,9 @@
-# Base image with node
 FROM node:20-slim
 
-# Puppeteer dependencies
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     wget \
+    gnupg \
     ca-certificates \
     fonts-liberation \
     libappindicator3-1 \
@@ -20,25 +20,31 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     xdg-utils \
-    libgbm1 \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+    --no-install-recommends
 
-# Set working directory
+# Download and install the expected version of Google Chrome (ver. 136.0.7103.94)
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    dpkg -i google-chrome-stable_current_amd64.deb || apt-get -fy install && \
+    rm google-chrome-stable_current_amd64.deb
+
+# Set Puppeteer cache path (optional, depending on config)
+ENV PUPPETEER_CACHE_DIR=/usr/src/app/.cache/puppeteer
+
+# Set environment variable for Puppeteer to find Chrome
+ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome"
+
+# Create app directory
 WORKDIR /usr/src/app
 
-# Install dependencies
+# Install app dependencies
 COPY package*.json ./
 RUN npm install
 
-# Force Chromium install
-RUN npx puppeteer browsers install chrome
-
-# Copy source code
+# Copy app source
 COPY . .
 
-# Expose port
-EXPOSE 3000
+# Expose app port if needed (optional)
+# EXPOSE 3000
 
 # Start the app
-CMD ["npm", "start"]
+CMD [ "npm", "start" ]
