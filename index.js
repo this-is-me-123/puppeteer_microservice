@@ -1,27 +1,19 @@
-const puppeteer = require('puppeteer');
-const puppeteerExtra = require('puppeteer-extra');
+const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
 
-// Force puppeteer-extra to use full puppeteer
-puppeteerExtra.puppeteer = puppeteer;
-
-puppeteerExtra.use(StealthPlugin());
-puppeteerExtra.use(AdblockerPlugin({ blockTrackers: true }));
+puppeteer.use(StealthPlugin());
+puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 
 (async () => {
-  try {
-    const browser = await puppeteerExtra.launch({
-      headless: true,
-      args: ['--no-sandbox'],
-      executablePath: puppeteer.executablePath() // 👈 use Chromium that Puppeteer knows about
-    });
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    // ❌ DO NOT set executablePath unless absolutely necessary
+  });
 
-    const version = await browser.version();
-    console.log(`✅ Chromium is working: ${version}`);
-    await browser.close();
-  } catch (err) {
-    console.error('❌ Chromium launch failed:', err);
-    process.exit(1);
-  }
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+
+  // ... other logic
 })();
