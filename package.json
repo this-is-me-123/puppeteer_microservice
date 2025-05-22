@@ -1,14 +1,18 @@
 {
-"name": "puppeteer-microservice",
-"version": "1.0.0",
-"main": "index.js",
-"scripts": {
-"start": "node index.js"
-},
-"dependencies": {
-"express": "^4.18.2",
-"puppeteer-extra": "^3.3.4",
-"puppeteer-extra-plugin-stealth": "^2.11.1",
-"puppeteer": "^20.8.1"
-}
+  "name": "onlyfans-puppeteer-microservice",
+  "version": "1.0.0",
+  "description": "A Puppeteer-based login microservice for OnlyFans",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-stealth": "^2.11.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
 }
