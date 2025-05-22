@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+
 (async () => {
 try {
 const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
@@ -24,5 +25,5 @@ app.use(express.json());
 app.use('/login', loginRoute);
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+console.log(🚀 Server running on port ${PORT});
 });
