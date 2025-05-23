@@ -1,3 +1,6 @@
+console.log('🐞 puppeteer keys:', Object.keys(require('puppeteer-extra')));
+
+
 const express = require('express');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
