@@ -5,6 +5,7 @@ ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 # Install dependencies required by Chromium
 RUN apt-get update && apt-get install -y \
+    chromium \
     fonts-liberation \
     libappindicator3-1 \
     libasound2 \
