@@ -16,7 +16,7 @@ app.get('/login', async (req, res) => {
     await page.goto('https://example.com');
     const title = await page.title();
     const version = await browser.version();
-    console.log(✅ Chromium is working: ${version});
+    console.log(✅ Chromium is working: ${version}');
     await browser.close();
     res.send(`Page title: ${title}`);
   } catch (err) {
