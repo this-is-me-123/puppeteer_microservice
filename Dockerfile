@@ -1,6 +1,8 @@
 # Use official Node.js image
 FROM node:20-slim
 
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
 # Install dependencies required by Chromium
 RUN apt-get update && apt-get install -y \
     fonts-liberation \
@@ -24,8 +26,6 @@ RUN apt-get update && apt-get install -y \
 
 # Set working directory
 WORKDIR /usr/src/app
-
-ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 # Copy package files and install
 COPY package*.json ./

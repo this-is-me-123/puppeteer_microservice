@@ -1,22 +1,26 @@
-const puppeteer = require('puppeteer-core'); // or 'puppeteer' if you switched
+const express = require('express');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
 
-(async () => {
-  const browser = await puppeteer.launch({
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
-    headless: 'new', // Modern headless mode (since Chrome 112+)
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-gpu',
-      '--disable-dev-shm-usage',
-      '--disable-infobars',
-      '--window-size=1920,1080',
-    ],
-  });
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-  const page = await browser.newPage();
-  await page.goto('https://example.com');
-  console.log(await page.title());
+app.get('/login', async (req, res) => {
+  try {
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox'],
+      executablePath: '/usr/bin/chromium' // Use system Chromium
+    });
+    const page = await browser.newPage();
+    await page.goto('https://example.com');
+    const title = await page.title();
+    await browser.close();
+    res.send(`Page title: ${title}`);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
 
-  await browser.close();
-})();
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
