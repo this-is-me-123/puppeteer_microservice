@@ -1,3 +1,6 @@
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/this-is-me-123/puppeteer_microservice?utm_source=oss&utm_medium=github&utm_campaign=this-is-me-123%2Fpuppeteer_microservice&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+
+
 OnlyFans Puppeteer Microservice
 This microservice automates login and scraping flows on OnlyFans using Puppeteer with stealth support.
 
