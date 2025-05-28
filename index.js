@@ -8,21 +8,6 @@ const PORT = process.env.PORT || 8080;
 
 puppeteer.use(StealthPlugin());
 
-async function retryPageGoto(page, url, options, retries = 3) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      return await page.goto(url, options);
-    } catch (err) {
-      if (i === retries - 1) throw err;
-      console.warn(`Retrying navigation (${i + 1})...`);
-    }
-  }
-}
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
 app.get('/login', async (req, res) => {
   const browser = await puppeteer.launch({
     headless: true,
@@ -31,15 +16,19 @@ app.get('/login', async (req, res) => {
 
   const page = await browser.newPage();
 
+  const loginUrl = `http://api.scraperapi.com?api_key=${process.env.SCRAPERAPI_KEY}&render=true&url=https://onlyfans.com/`;
+
   try {
-    console.log("➡️  Launching Puppeteer");
+    await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-    await retryPageGoto(page, `http://api.scraperapi.com?api_key=${process.env.SCRAPER_API_KEY}&url=https://onlyfans.com/`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 30000
-    });
+    const html = await page.content();
+    const screenshot = await page.screenshot({ encoding: 'base64' });
 
-    await page.waitForSelector('input[name="email"]', { timeout: 15000 });
+    const emailInput = await page.$('input[name="email"]');
+    if (!emailInput) {
+      throw new Error('Selector input[name="email"] not found.');
+    }
+
     await page.type('input[name="email"]', process.env.OF_EMAIL);
     await page.type('input[name="password"]', process.env.OF_PASSWORD);
 
@@ -48,19 +37,22 @@ app.get('/login', async (req, res) => {
       page.click('button[type="submit"]')
     ]);
 
-    const screenshot = await page.screenshot({ encoding: 'base64' });
-    const url = page.url();
-
-    console.log("✅ Logged in and captured screenshot");
+    const finalUrl = page.url();
 
     res.json({
       success: true,
-      url,
+      url: finalUrl,
       screenshot_base64: screenshot
     });
+
   } catch (err) {
-    console.error("❌ Error during login:", err.message);
-    res.status(500).json({ error: err.message });
+    const fallbackScreenshot = await page.screenshot({ encoding: 'base64' });
+    const html = await page.content();
+    res.status(500).json({
+      error: err.message,
+      screenshot_base64: fallbackScreenshot,
+      html_snippet: html.slice(0, 1000)
+    });
   } finally {
     await browser.close();
   }
