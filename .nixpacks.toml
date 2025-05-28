@@ -1,29 +1,16 @@
 [phases.setup]
-nixpkgs = [
-  "nodejs_18",
-  "chromium",
+nixPkgs = [
   "libnss3",
-  "libatk1.0",
-  "libatk-bridge2.0",
-  "libcups",
-  "libgbm",
-  "libasound2",
-  "libpangocairo-1.0",
-  "libxss",
-  "libgtk-3",
-  "libxshmfence",
-  "libglu"
   "libatk",
   "libatk-bridge",
+  "libcups",
+  "libxshmfence",
+  "libxss",
   "libxcomposite",
   "libxdamage",
   "libxrandr",
+  "libgbm",
   "libgtk3",
   "libasound",
+  "libglu"
 ]
-
-[phases.install]
-cmds = ["npm ci"]
-
-[phases.start]
-cmd = "npm run start"
