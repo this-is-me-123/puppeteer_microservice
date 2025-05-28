@@ -1,0 +1,16 @@
+services:
+  onlyfans-login-bot:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - PROXY_HOST=gate.decodo.com
+      - PROXY_PORT=10001
+      - PROXY_USER=sp1zc2s6xq
+      - PROXY_PASS=g65f~B5iJ0qyidEvLd
+      - 2CAPTCHA_API_KEY=your_2captcha_key
+      - AUTH_USER=admin
+      - AUTH_PASS=securepass
+    volumes:
+      - ./debug_logs:/app/debug_logs
