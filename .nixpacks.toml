@@ -13,6 +13,13 @@ nixpkgs = [
   "libgtk-3",
   "libxshmfence",
   "libglu"
+  "libatk",
+  "libatk-bridge",
+  "libxcomposite",
+  "libxdamage",
+  "libxrandr",
+  "libgtk3",
+  "libasound",
 ]
 
 [phases.install]
