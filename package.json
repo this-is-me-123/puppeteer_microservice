@@ -1,7 +1,7 @@
 {
   "name": "onlyfans-puppeteer-microservice",
   "version": "1.0.0",
-  "description": "Puppeteer microservice with rotating proxy",
+  "description": "A Puppeteer-based login microservice for OnlyFans",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -11,8 +11,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "puppeteer-extra": "^3.3.4",
-    "puppeteer-extra-plugin-stealth": "^2.11.1",
-    "puppeteer": "^21.3.8"
+    "puppeteer-extra-plugin-stealth": "^2.11.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
