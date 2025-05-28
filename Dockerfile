@@ -1,24 +1,26 @@
-# Use Node.js 20 as base image
-FROM node:20
+FROM node:18-slim
 
-# Set working directory
-WORKDIR /usr/src/app
+# Install Puppeteer dependencies
+RUN apt-get update && apt-get install -y \
+    libnss3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libxss1 \
+    libxshmfence1 \
+    libxcomposite1 \
+    libxrandr2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libpango-1.0-0 \
+    libasound2 \
+    --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install
-
-# Set Puppeteer cache directory explicitly so it persists during build
-ENV PUPPETEER_CACHE_DIR=/usr/src/app/.cache/puppeteer
-
-# Install Puppeteer's required version of Chrome
-RUN npx puppeteer browsers install chrome
-
-# Copy the rest of the source code
+# Set app directory
+WORKDIR /app
 COPY . .
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Install Node dependencies
+RUN npm install
 
-# Run the app
 CMD ["npm", "start"]
