@@ -17,7 +17,7 @@ app.get('/login', async (req, res) => {
 
   const page = await browser.newPage();
 
-  const loginUrl = `http://api.scraperapi.com?api_key=${process.env.SCRAPERAPI_KEY}&render=true&url=https://onlyfans.com/`;
+  const loginUrl = `http://api.scraperapi.com?api_key=${process.env.SCRAPERAPI_KEY}&render=true&url=https://onlyfans.com/?return_to=%2Flogin`;
 
   try {
     await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
