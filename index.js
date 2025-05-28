@@ -31,6 +31,7 @@ app.get('/login', async (req, res) => {
     }
 
     // Check if login form is present
+    await page.waitForSelector('input[name="email"]', { timeout: 10000 });
     const emailInput = await page.$('input[name="email"]');
     if (!emailInput) {
       const screenshot = await page.screenshot({ encoding: 'base64' });
@@ -45,7 +46,33 @@ app.get('/login', async (req, res) => {
       page.click('button[type="submit"]')
     ]);
 
+    
     const finalUrl = page.url();
+
+    // Extract auth data
+    const cookies = await page.cookies();
+    const localStorage = await page.evaluate(() => {
+      let store = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        store[key] = localStorage.getItem(key);
+      }
+      return store;
+    });
+
+    const sessionStorage = await page.evaluate(() => {
+      let store = {};
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        store[key] = sessionStorage.getItem(key);
+      }
+      return store;
+    });
+
+    const fs = require('fs');
+    fs.writeFileSync('session.json', JSON.stringify({ cookies, localStorage, sessionStorage }, null, 2));
+    console.log('[INFO] session.json saved');
+    
     const screenshot = await page.screenshot({ encoding: 'base64' });
 
     res.json({
