@@ -1,25 +1,43 @@
-
 require('dotenv').config();
 const express = require('express');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const axios = require('axios');
+const { HttpsProxyAgent } = require('https-proxy-agent');
 
 puppeteer.use(StealthPlugin());
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+const getProxyUrl = () => {
+  return `http://${process.env.PROXY_USER}:${process.env.PROXY_PASS}@${process.env.PROXY_HOST}:${process.env.PROXY_PORT}`;
+};
+
+// Route for proxy test using Axios
+app.get('/proxy-check', async (req, res) => {
+  const url = 'https://ip.decodo.com/json';
+  const agent = new HttpsProxyAgent(getProxyUrl());
+
+  try {
+    const response = await axios.get(url, { httpsAgent: agent });
+    res.json({ success: true, proxy_response: response.data });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Puppeteer-based login
 app.get('/login', async (req, res) => {
   const browser = await puppeteer.launch({
     headless: true,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
-      `--proxy-server=http://${process.env.PROXY_HOST}:${process.env.PROXY_PORT}`
+      `--proxy-server=${getProxyUrl()}`
     ]
   });
 
   const page = await browser.newPage();
-
   await page.authenticate({
     username: process.env.PROXY_USER,
     password: process.env.PROXY_PASS
