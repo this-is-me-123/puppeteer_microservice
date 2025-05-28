@@ -4,80 +4,47 @@ const express = require('express');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
+puppeteer.use(StealthPlugin());
 const app = express();
 const PORT = process.env.PORT || 8080;
-
-puppeteer.use(StealthPlugin());
 
 app.get('/login', async (req, res) => {
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--no-sandbox']
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      `--proxy-server=http://${process.env.PROXY_HOST}:${process.env.PROXY_PORT}`
+    ]
   });
 
   const page = await browser.newPage();
 
-  const loginUrl = `http://api.scraperapi.com?api_key=${process.env.SCRAPERAPI_KEY}&render=true&url=https://onlyfans.com/?return_to=%2Flogin`;
+  await page.authenticate({
+    username: process.env.PROXY_USER,
+    password: process.env.PROXY_PASS
+  });
 
   try {
-    await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.goto('https://onlyfans.com/login', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-    const htmlContent = await page.content();
-
-    // Check for unauthorized or invalid API key
-    if (htmlContent.includes('Unauthorized request') || htmlContent.includes('API key is invalid')) {
-      const screenshot = await page.screenshot({ encoding: 'base64' });
-      throw new Error('Unauthorized request. Check your ScraperAPI key.');
-    }
-
-    // Check if login form is present
-    await page.waitForSelector('input[name="email"]', { timeout: 10000 });
-    const emailInput = await page.$('input[name="email"]');
-    if (!emailInput) {
-      const screenshot = await page.screenshot({ encoding: 'base64' });
-      throw new Error('Login form not found. Page may not have loaded correctly.');
-    }
-
-    await page.type('input[name="email"]', process.env.OF_EMAIL);
-    await page.type('input[name="password"]', process.env.OF_PASSWORD);
+    await page.waitForSelector('input[name="email"]', { timeout: 30000 });
+    await page.type('input[name="email"]', process.env.OF_EMAIL, { delay: 50 });
+    await page.type('input[name="password"]', process.env.OF_PASSWORD, { delay: 50 });
 
     await Promise.all([
-      page.waitForNavigation({ waitUntil: 'networkidle2' }),
-      page.click('button[type="submit"]')
+      page.click('button[type="submit"]'),
+      page.waitForNavigation({ waitUntil: 'networkidle2' })
     ]);
 
-    
-    const finalUrl = page.url();
-
-    // Extract auth data
     const cookies = await page.cookies();
-    const localStorage = await page.evaluate(() => {
-      let store = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        store[key] = localStorage.getItem(key);
-      }
-      return store;
-    });
-
-    const sessionStorage = await page.evaluate(() => {
-      let store = {};
-      for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        store[key] = sessionStorage.getItem(key);
-      }
-      return store;
-    });
-
-    const fs = require('fs');
-    fs.writeFileSync('session.json', JSON.stringify({ cookies, localStorage, sessionStorage }, null, 2));
-    console.log('[INFO] session.json saved');
-    
+    const finalUrl = page.url();
     const screenshot = await page.screenshot({ encoding: 'base64' });
 
     res.json({
       success: true,
       url: finalUrl,
+      cookies,
       screenshot_base64: screenshot
     });
 
