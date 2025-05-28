@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 const express = require('express');
 const puppeteer = require('puppeteer-extra');
@@ -21,12 +22,19 @@ app.get('/login', async (req, res) => {
   try {
     await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-    const html = await page.content();
-    const screenshot = await page.screenshot({ encoding: 'base64' });
+    const htmlContent = await page.content();
 
+    // Check for unauthorized or invalid API key
+    if (htmlContent.includes('Unauthorized request') || htmlContent.includes('API key is invalid')) {
+      const screenshot = await page.screenshot({ encoding: 'base64' });
+      throw new Error('Unauthorized request. Check your ScraperAPI key.');
+    }
+
+    // Check if login form is present
     const emailInput = await page.$('input[name="email"]');
     if (!emailInput) {
-      throw new Error('Selector input[name="email"] not found.');
+      const screenshot = await page.screenshot({ encoding: 'base64' });
+      throw new Error('Login form not found. Page may not have loaded correctly.');
     }
 
     await page.type('input[name="email"]', process.env.OF_EMAIL);
@@ -38,6 +46,7 @@ app.get('/login', async (req, res) => {
     ]);
 
     const finalUrl = page.url();
+    const screenshot = await page.screenshot({ encoding: 'base64' });
 
     res.json({
       success: true,
