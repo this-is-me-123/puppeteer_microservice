@@ -1,0 +1,1 @@
+// captcha solving helper placeholder
