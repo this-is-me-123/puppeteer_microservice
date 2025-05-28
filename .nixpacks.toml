@@ -1,16 +1,16 @@
-[phases.setup]
-nixPkgs = [
-  "libnss3",
-  "libatk",
-  "libatkmm",
-  "cups",
-  "libxss",
-  "libxshmfence",
-  "libxcomposite",
-  "libxrandr",
-  "libgbm",
-  "gtk3",
-  "pango",
-  "alsa-lib",
-  "glib"
+[nixpacks]
+phases.setup.nixPkgs = [
+  "libnss3"
+  "libatk"
+  "libatk-bridge"
+  "libcups"
+  "libgbm"
+  "libasound"
+  "libpangocairo"
+  "libxss"
+  "libgtk3"
+  "libxshmfence"
+  "mesa"
+  "glu"
+  "chromium"
 ]
