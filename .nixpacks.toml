@@ -2,17 +2,15 @@
 nixPkgs = [
   "libnss3",
   "libatk",
-  "libatk-bridge",
-  "libcups",
-  "libxshmfence",
+  "libatkmm",
+  "cups",
   "libxss",
+  "libxshmfence",
   "libxcomposite",
-  "libxdamage",
   "libxrandr",
   "libgbm",
-  "libgtk3",
-  "libasound",
-  "libglu"
+  "gtk3",
+  "pango",
+  "alsa-lib",
+  "glib"
 ]
-
-
